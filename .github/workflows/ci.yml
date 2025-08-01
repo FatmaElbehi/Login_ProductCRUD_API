@@ -10,36 +10,32 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # Set environment variables here if needed for your tests
       NODE_ENV: test
 
     steps:
-      - name: Checkout API test repo
+      - name: Checkout test automation repo
         uses: actions/checkout@v3
 
-      - name: Clone MERN app repo
+      - name: Clone MERN backend repo
         run: |
           git clone https://github.com/FatmaElbehi/registration-and-login-application-with-crud-operation-using-MERN-stack.git app
-        working-directory: ${{ github.workspace }}
 
-      - name: Setup Node.js for MERN app
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Install dependencies for MERN app
+      - name: Install backend dependencies
         run: |
-          cd app
+          cd app/backend
           npm install
 
-      - name: Start MERN app backend server
+      - name: Start backend server
         run: |
-          cd app
-          # Assuming your backend starts with "npm start" or "node server.js"
-          # Adjust if your start script differs
-          nohup npm start &
-        # Allow server time to start up before tests
-      - name: Wait for backend server to start
+          cd app/backend
+          nohup node server.js &
+
+      - name: Wait for backend startup
         run: |
           echo "Waiting for server to start..."
           sleep 15
@@ -48,10 +44,8 @@ jobs:
         run: npm install
 
       - name: Run API tests
-        run: npm test
-        # Replace with your test command if different
+        run: npm test  # or `newman run ...` depending on your setup
 
-      # Optional: Kill the app server (in case it blocks something)
-      - name: Kill background Node processes
+      - name: Kill backend node server
         run: |
           pkill node || true
