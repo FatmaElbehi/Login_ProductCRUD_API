@@ -1,0 +1,589 @@
+{
+	"info": {
+	  "_postman_id": "6b45575f-e5c3-44d7-b831-f371e849b10c",
+	  "name": "Automation API Testing for Login & Products CRUD App",
+	  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+	  "_exporter_id": "24977263"
+	},
+	"item": [
+	  {
+		"name": "Login - Negative Test (Invalid Credentials)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n    \"username\": \"{{invalid_username}}\",\n    \"password\": \"{{invalid_password}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/login",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "login"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 400\", function () {",
+				"    pm.response.to.have.status(400);",
+				"});",
+				"",
+				"pm.test(\"Error message returned\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(false);",
+				"    pm.expect(jsonData.errorMessage).to.include(\"Username or password is incorrect\");",
+				"});",
+				"",
+				"// Ensure token is not set",
+				"pm.environment.unset(\"token\");"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Login - Positive Test (Valid Credentials)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/login",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "login"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 200\", function () {",
+				"    pm.response.to.have.status(200);",
+				"});",
+				"",
+				"pm.test(\"Login successful and token received\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(true);",
+				"    pm.expect(jsonData).to.have.property(\"token\");",
+				"    pm.environment.set(\"token\", jsonData.token);",
+				"    console.log(\"Token saved:\", jsonData.token);",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Register - Positive Test (New User)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/register",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "register"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 200\", function () {",
+				"    pm.response.to.have.status(200);",
+				"});",
+				"",
+				"pm.test(\"Registration successful\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(true);",
+				"    pm.expect(jsonData.title).to.eql('Registered Successfully.');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Register - Negative Test (User Already Exists)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"username\": \"{{existing_username}}\",\n  \"password\": \"{{password}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/register",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "register"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 400\", function () {",
+				"    pm.response.to.have.status(400);",
+				"});",
+				"",
+				"pm.test(\"User already exists error\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(false);",
+				"    pm.expect(jsonData.errorMessage).to.include('Already Exist');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Register - Negative Test (Missing Parameters)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"username\": \"{{existing_username}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/register",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "register"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 400\", function () {",
+				"    pm.response.to.have.status(400);",
+				"});",
+				"",
+				"pm.test(\"Missing parameter error\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(false);",
+				"    pm.expect(jsonData.errorMessage).to.eql('Add proper parameter first!');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Add Product - Positive Test (valid data)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			},
+			{
+			  "key": "token",
+			  "value": "{{token}}",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"name\": \"{{product_name}}\",\n  \"desc\": \"{{product_desc}}\",\n  \"price\": {{product_price}},\n  \"discount\": {{product_discount}}\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/add-product",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "add-product"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 200\", () => {",
+				"    pm.response.to.have.status(200);",
+				"});",
+				"",
+				"pm.test(\"Response status true and success message\", () => {",
+				"    const jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(true);",
+				"    pm.expect(jsonData.title).to.eql('Product added Successfully');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Add Product - Negative Test (missing parameter)",
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			},
+			{
+			  "key": "token",
+			  "value": "{{token}}",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"name\": \"{{product_name}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/add-product",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "add-product"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 400\", () => {",
+				"    pm.response.to.have.status(400);",
+				"});",
+				"",
+				"pm.test(\"Missing parameter error\", () => {",
+				"    const jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(false);",
+				"    pm.expect(jsonData.errorMessage).to.eql('Add proper parameter first!');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  
+	  {
+		"name": "View Product Details - Positive Test",
+		"request": {
+		  "method": "GET",
+		  "url": {
+			"raw": "{{base_url}}/get-product",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "get-product"
+			]
+		  },
+		  "header": [
+			{
+			  "key": "token",
+			  "value": "{{token}}"
+			}
+		  ]
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 200\", () => {",
+				"    pm.response.to.have.status(200);",
+				"});",
+				"",
+				"pm.test(\"Response status is true and products array exists\", () => {",
+				"    const jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(true);",
+				"    pm.expect(jsonData.products).to.be.an('array');",
+				"});",
+				"",
+				"pm.test(\"Response contains product with expected id\", () => {",
+				"    const productId = pm.variables.get('product_id');",
+				"    const products = pm.response.json().products;",
+				"    const found = products.some(p => p.id == productId || p._id == productId);",
+				"    pm.expect(found).to.eql(true);",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },	  
+	  {
+		"name": "Update Product - Positive Test",
+		"request": {
+		  "method": "PUT",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			},
+			{
+			  "key": "token",
+			  "value": "{{token}}",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"name\": \"{{product_name}}\",\n  \"desc\": \"{{product_desc}}\",\n  \"price\": {{product_price}},\n  \"discount\": {{product_discount}}\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/update-product/{{product_id}}",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "update-product",
+			  "{{product_id}}"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 200\", () => {",
+				"    pm.response.to.have.status(200);",
+				"});",
+				"",
+				"pm.test(\"Response status true and update success message\", () => {",
+				"    const jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(true);",
+				"    pm.expect(jsonData.title).to.eql('Product updated Successfully');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Update Product - Negative Test (missing parameter)",
+		"request": {
+		  "method": "PUT",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			},
+			{
+			  "key": "token",
+			  "value": "{{token}}",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"name\": \"{{product_name}}\"\n}",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": {
+			"raw": "{{base_url}}/update-product/{{product_id}}",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "update-product",
+			  "{{product_id}}"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 400\", () => {",
+				"    pm.response.to.have.status(400);",
+				"});",
+				"",
+				"pm.test(\"Missing parameter error\", () => {",
+				"    const jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(false);",
+				"    pm.expect(jsonData.errorMessage).to.eql('Add proper parameter first!');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  },
+	  {
+		"name": "Positive Test - Delete Product Successfully",
+		"request": {
+		  "method": "DELETE",
+		  "header": [
+			{
+			  "key": "token",
+			  "value": "{{token}}",
+			  "type": "text"
+			}
+		  ],
+		  "url": {
+			"raw": "{{base_url}}/delete-product/{{product_id}}",
+			"host": [
+			  "{{base_url}}"
+			],
+			"path": [
+			  "delete-product",
+			  "{{product_id}}"
+			]
+		  }
+		},
+		"response": [],
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Status code is 200\", () => {",
+				"    pm.response.to.have.status(200);",
+				"});",
+				"",
+				"pm.test(\"Response status true and delete success message\", () => {",
+				"    const jsonData = pm.response.json();",
+				"    pm.expect(jsonData.status).to.eql(true);",
+				"    pm.expect(jsonData.title).to.eql('Product deleted Successfully');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		]
+	  }
+	]
+  }
+  
