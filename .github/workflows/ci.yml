@@ -40,11 +40,12 @@ jobs:
           echo "Waiting for server to start..."
           sleep 15
 
-      - name: Install dependencies for API tests
-        run: npm install
+      - name: Install Newman
+        run: npm install -g newman
 
-      - name: Run API tests
-        run: npm test  # or `newman run ...` depending on your setup
+      - name: Run Postman Collection
+        run: newman run AutomationAPI_Testing.postman_collection.json
+
 
       - name: Kill backend node server
         run: |
